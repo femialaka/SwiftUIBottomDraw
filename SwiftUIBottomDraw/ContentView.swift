@@ -16,8 +16,12 @@ struct ContentView: View {
     // keeps the panes a reasonable size based on device resolution
     var minWidth : CGFloat = UIScreen.main.bounds.size.width / 6
     let minHeight : CGFloat = UIScreen.main.bounds.size.height / 12
-    let maxHeight : CGFloat = UIScreen.main.bounds.size.height / 6
+    let maxHeight : CGFloat = UIScreen.main.bounds.size.height / 4
+    let maxDragHeight : CGFloat = UIScreen.main.bounds.size.height * 0.8
     let screenWidth : CGFloat = UIScreen.main.bounds.size.width
+    
+    @State private var showBottomModal = false
+    @State private var bottomModalLabel = "Activate Bottom Modal"
     
     // purple and orange grips are this thick
     let thickness : CGFloat = 9
@@ -25,7 +29,6 @@ struct ContentView: View {
     
     // use computed properties to keep the body tidy
     var body: some View {
-        
         
         VStack(spacing: 0) {
             mainContent
@@ -46,29 +49,47 @@ struct ContentView: View {
     var mainContent : some View {
         ZStack(alignment: .center) {
             Color.green.edgesIgnoringSafeArea(.all)
-            Text("Main Content").font(.largeTitle).bold()
+            VStack{
+                Text("Main Content").font(.largeTitle).bold()
+                Button(bottomModalLabel) {
+                    showBottomModal.toggle()
+                    if showBottomModal {
+                        dragHeight = maxDragHeight / 2
+                        bottomModalLabel = "Close Bottom Modal"
+                    }
+                    else {
+                        dragHeight = ContentView.startHeight
+                        bottomModalLabel = "Activate Bottom Modal"
+                    }
+                }
+                .font(.title2)
+                .foregroundColor(Color.white)
+                .padding()
+                
+               
+            }
         }
     }
     
     
     var dragHandle : some View {
-                Image(systemName: "line.3.horizontal")
-                    .padding(.top, 6)
-                    .foregroundColor(Color.white)
-                    .font(.system(size: 28.0))
-                    .frame(width: self.screenWidth)
-                    .background(Color.blue)
-                
-                    .gesture(
-                        DragGesture()
-                            .onChanged { gesture in
-                                let screenHeight = UIScreen.main.bounds.size.height
-                                let delta = gesture.translation.height
-                                dragHeight = max(dragHeight - delta, minHeight)
-                                dragHeight = min(screenHeight - thickness - maxHeight, dragHeight)
-                            }
-                    )
-            
+        Image(systemName: "line.3.horizontal")
+            .padding(.top, 6)
+            .foregroundColor(Color.white)
+            .font(.system(size: 28.0))
+            .frame(width: self.screenWidth)
+            .background(Color.blue)
+        
+            .gesture(
+                DragGesture()
+                    .onChanged { gesture in
+                        let screenHeight = UIScreen.main.bounds.size.height
+                        let delta = gesture.translation.height
+                        dragHeight = max(dragHeight - delta, minHeight)
+                        dragHeight = min(screenHeight - thickness - maxHeight, dragHeight)
+                    }
+            )
+        
     }
 }
 
